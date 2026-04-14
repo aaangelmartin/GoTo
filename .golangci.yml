@@ -28,6 +28,12 @@ linters:
           disabled: true
         - name: var-naming
           disabled: true
+  exclusions:
+    rules:
+      # misspell is English-only; the i18n catalog holds Spanish strings.
+      - path: internal/i18n/catalog\.go
+        linters:
+          - misspell
 
 formatters:
   enable:
