@@ -28,7 +28,7 @@ func newRmCmd() *cobra.Command {
 				return err
 			}
 			if cfg.ConfirmDelete && !flags.yes {
-				fmt.Fprintf(cmd.OutOrStdout(), i18n.T("rm_confirm"), a.Name, a.URL)
+				fmt.Fprintf(cmd.OutOrStdout(), i18n.T("rm_confirm"), a.Name, a.Target)
 				reader := bufio.NewReader(os.Stdin)
 				resp, _ := reader.ReadString('\n')
 				resp = strings.TrimSpace(strings.ToLower(resp))

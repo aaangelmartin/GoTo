@@ -43,7 +43,7 @@ func (m *model) confirmView() string {
 	title := m.theme.Danger_.Render(i18n.T("tui_confirm_delete"))
 	body := fmt.Sprintf("%s\n%s\n\n",
 		m.theme.Title.Render(m.confirmTarget.Name),
-		m.theme.URL.Render(m.confirmTarget.URL),
+		m.theme.URL.Render(m.confirmTarget.Target),
 	)
 	yes := i18n.T("tui_confirm_yes")
 	no := i18n.T("tui_confirm_no")

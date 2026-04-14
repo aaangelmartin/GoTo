@@ -1,6 +1,10 @@
 package tui
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+
+	"github.com/aaangelmartin/goto/internal/alias"
+)
 
 // Theme holds all styles for the TUI. Switch themes via config.
 type Theme struct {
@@ -30,30 +34,42 @@ type Theme struct {
 	URL        lipgloss.Style
 	Help       lipgloss.Style
 	Empty      lipgloss.Style
+
+	// TypeStyles maps each alias type to a color-coded badge style.
+	TypeStyles map[alias.Type]lipgloss.Style
+}
+
+// TypeBadge returns a short label wrapped in the type's badge style.
+func (t Theme) TypeBadge(typ alias.Type, label string) string {
+	st, ok := t.TypeStyles[typ]
+	if !ok {
+		st = lipgloss.NewStyle().Foreground(t.FGDim)
+	}
+	return st.Render(" " + label + " ")
 }
 
 func themeByName(name string) Theme {
 	switch name {
 	case "dracula":
 		return build("dracula",
-			"#FF79C6", "#8BE9FD", "#F8F8F2", "#6272A4",
+			"#00B5E2", "#00D4FF", "#F8F8F2", "#6272A4",
 			"#282A36", "#44475A", "#50FA7B", "#FF5555", "#F1FA8C", "#44475A")
 	case "catppuccin", "catppuccin-mocha":
 		return build("catppuccin",
-			"#CBA6F7", "#89B4FA", "#CDD6F4", "#6C7086",
+			"#00B5E2", "#89DCEB", "#CDD6F4", "#6C7086",
 			"#1E1E2E", "#313244", "#A6E3A1", "#F38BA8", "#F9E2AF", "#45475A")
 	case "nord":
 		return build("nord",
-			"#88C0D0", "#B48EAD", "#ECEFF4", "#4C566A",
+			"#00B5E2", "#88C0D0", "#ECEFF4", "#4C566A",
 			"#2E3440", "#3B4252", "#A3BE8C", "#BF616A", "#EBCB8B", "#434C5E")
 	case "tokyonight":
 		return build("tokyonight",
-			"#BB9AF7", "#7AA2F7", "#C0CAF5", "#565F89",
+			"#00B5E2", "#7AA2F7", "#C0CAF5", "#565F89",
 			"#1A1B26", "#24283B", "#9ECE6A", "#F7768E", "#E0AF68", "#3B4261")
 	default:
 		return build("default",
-			"#FF79C6", "#8BE9FD", "#F8F8F2", "#6272A4",
-			"#282A36", "#44475A", "#50FA7B", "#FF5555", "#F1FA8C", "#44475A")
+			"#00B5E2", "#7DD3FC", "#E5E7EB", "#6B7280",
+			"#0B1220", "#1F2937", "#22D3A6", "#F87171", "#FBBF24", "#273043")
 	}
 }
 
@@ -85,5 +101,18 @@ func build(name, accent, accent2, fg, fgDim, bg, bgDim, ok, bad, warn, border st
 	t.URL = lipgloss.NewStyle().Foreground(t.Accent2).Underline(true)
 	t.Help = lipgloss.NewStyle().Foreground(t.FGDim)
 	t.Empty = lipgloss.NewStyle().Foreground(t.FGDim).Italic(true).Align(lipgloss.Center)
+
+	mk := func(fg string) lipgloss.Style {
+		return lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(fg))
+	}
+	t.TypeStyles = map[alias.Type]lipgloss.Style{
+		alias.TypeURL:       mk("#00B5E2"),
+		alias.TypeMailto:    mk("#F472B6"),
+		alias.TypeSSH:       mk("#FBBF24"),
+		alias.TypeFile:      mk("#A78BFA"),
+		alias.TypeDirectory: mk("#22D3A6"),
+		alias.TypeCommand:   mk("#FB7185"),
+		alias.TypeAuto:      mk("#94A3B8"),
+	}
 	return t
 }
