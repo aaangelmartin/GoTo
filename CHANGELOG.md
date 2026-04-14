@@ -6,6 +6,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-04-14
+
+### Added / Añadido
+- **In-TUI Settings screen** — press `o` to open a full Settings view with cycling rows (language, theme, browser, default action, directory mode), text rows (terminal, search engine, per-type openers) and per-extension overrides with add/edit/delete. Replaces the `$EDITOR` shell-out that never worked inside Bubble Tea's altscreen.
+- **Pantalla de Ajustes en la TUI** — pulsa `o` para abrir los ajustes dentro del TUI.
+- **Explicit Type field** in the Add/Edit form — 5th row with a colored badge, cycled with `↑/↓`, covering auto · url · mailto · ssh · file · directory · command. Placeholders now advertise every supported shape.
+- **Campo Type explícito** en el formulario — deja claro que se puede guardar URLs, rutas, mails, ssh y comandos, no solo URLs.
+- **`goto opener list|set|unset`** and **`goto completion install`** for zero-friction setup of per-type apps and shell completion.
+
+### Fixed / Arreglado
+- **Themes look different now**: each theme keeps its signature accent (Dracula pink, Catppuccin mauve, Nord frost, Tokyo Night purple); `#00B5E2` stays as the "default" theme. The wizard previews the theme live as you scroll options.
+- **Los temas se distinguen** — cada uno con su acento propio; preview en vivo.
+- **`default_action` no longer restricts** — it used to override the type detector unconditionally, so picking "url" made paths and emails open as URLs. It now only tie-breaks bare ambiguous tokens.
+- **`default_action` ya no restringe** — solo desempata palabras ambiguas.
+
+### Changed / Cambiado
+- `make build` ad-hoc-signs the binary on macOS to avoid Gatekeeper SIGKILL on local Apple Silicon builds.
+- `make build` firma ad-hoc el binario en macOS para evitar SIGKILL de Gatekeeper.
+
 ## [0.4.0] — 2026-04-14
 
 ### Added / Añadido
@@ -66,7 +85,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 - Fuzzy alias resolver (exact > prefix > substring > subsequence-density).
 - Homebrew tap and multi-arch GitHub Releases via goreleaser.
 
-[Unreleased]: https://github.com/aaangelmartin/GoTo/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/aaangelmartin/GoTo/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/aaangelmartin/GoTo/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/aaangelmartin/GoTo/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/aaangelmartin/GoTo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/aaangelmartin/GoTo/compare/v0.1.0...v0.2.0
