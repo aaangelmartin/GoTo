@@ -31,6 +31,7 @@ const (
 	screenForm
 	screenConfirm
 	screenHelp
+	screenOnboard
 )
 
 type formMode int
@@ -47,6 +48,9 @@ type model struct {
 	keys  keyMap
 
 	screen screen
+
+	// onboarding state
+	onboard onboardModel
 
 	// list state
 	items      []alias.Alias
@@ -75,7 +79,7 @@ type model struct {
 
 func newModel(st *store.Store, cfg config.Config) *model {
 	th := themeByName(cfg.Theme)
-	return &model{
+	m := &model{
 		store:  st,
 		cfg:    cfg,
 		theme:  th,
@@ -83,6 +87,11 @@ func newModel(st *store.Store, cfg config.Config) *model {
 		screen: screenList,
 		items:  st.List(),
 	}
+	if shouldOnboard(st) {
+		m.screen = screenOnboard
+		m.onboard = newOnboardModel(th)
+	}
+	return m
 }
 
 func (m *model) Init() tea.Cmd { return nil }
@@ -102,6 +111,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateConfirm(msg)
 	case screenHelp:
 		return m.updateHelp(msg)
+	case screenOnboard:
+		return m.updateOnboard(msg)
 	}
 	return m, nil
 }
@@ -119,6 +130,8 @@ func (m *model) View() string {
 		body = m.confirmView()
 	case screenHelp:
 		body = m.helpView()
+	case screenOnboard:
+		body = m.onboardView()
 	}
 	return lipgloss.JoinVertical(lipgloss.Left, header, body, footer)
 }
@@ -193,6 +206,8 @@ func (m *model) footerView() string {
 		return m.theme.Help.Render(i18n.T("tui_help_confirm"))
 	case screenHelp:
 		return m.theme.Help.Render(i18n.T("tui_help_back"))
+	case screenOnboard:
+		return "" // onboarding owns its own footer/help hints
 	}
 	return ""
 }

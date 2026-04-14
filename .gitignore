@@ -20,3 +20,7 @@ vendor/
 # Env
 .env
 .env.local
+
+# Local collaboration notes, kept off GitHub
+CLAUDE.md
+.claude/
