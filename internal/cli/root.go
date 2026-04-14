@@ -114,6 +114,7 @@ func newRootCmd() *cobra.Command {
 		newImportCmd(),
 		newExportCmd(),
 		newConfigCmd(),
+		newOpenerCmd(),
 		newCompletionCmd(),
 		newShellInitCmd(),
 		newVersionCmd(),
