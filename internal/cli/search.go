@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/aaangelmartin/goto/internal/alias"
 	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
@@ -26,7 +27,7 @@ func newSearchCmd() *cobra.Command {
 				return fmt.Errorf("%s", i18n.T("err_search_config"))
 			}
 			u := strings.ReplaceAll(tmpl, "{q}", url.QueryEscape(query))
-			return openURL(u, cfg, cmd)
+			return dispatchOpen(alias.Alias{Target: u}, alias.TypeURL, cfg, cmd)
 		},
 	}
 }

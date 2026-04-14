@@ -31,6 +31,20 @@ func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "?":
 			m.screen = screenHelp
 			return m, nil
+		case "L":
+			// Cycle language permanently: persist to config.toml so it sticks
+			// between sessions.
+			next := "en"
+			if i18n.Current() == i18n.EN {
+				next = "es"
+			}
+			i18n.SetLang(next)
+			if err := persistLanguage(&m.cfg, next); err != nil {
+				m.setStatus(i18n.Tf("tui_status_err", err.Error()))
+			} else {
+				m.setStatus(i18n.Tf("tui_lang_switched", next))
+			}
+			return m, nil
 		case "j", "down":
 			filtered := m.filteredItems()
 			if m.cursor < len(filtered)-1 {
@@ -67,10 +81,10 @@ func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "y":
 			filtered := m.filteredItems()
 			if m.cursor < len(filtered) {
-				if err := copyClipboard(filtered[m.cursor].URL); err != nil {
+				if err := copyClipboard(filtered[m.cursor].Target); err != nil {
 					m.setStatus(i18n.Tf("tui_status_copyfail", err.Error()))
 				} else {
-					m.setStatus(i18n.Tf("tui_status_copied", filtered[m.cursor].URL))
+					m.setStatus(i18n.Tf("tui_status_copied", filtered[m.cursor].Target))
 				}
 			}
 		case "t":
@@ -194,24 +208,33 @@ func (m *model) renderList(items []alias.Alias, width, height int) string {
 	var b strings.Builder
 	for i := m.offset; i < end; i++ {
 		a := items[i]
-		line := fmt.Sprintf("%-20s  %s", truncate(a.Name, 20), truncate(a.URL, width-24))
+		t := alias.Resolve(a)
+		badge := m.theme.TypeBadge(t, typeLabel(t))
+		nameCol := truncate(a.Name, 18)
+		tgtCol := truncate(a.Target, width-30)
+		line := fmt.Sprintf("%s %-18s %s", badge, nameCol, tgtCol)
 		if i == m.cursor {
-			line = "▶ " + line
-			b.WriteString(m.theme.ItemSel.Width(width - 2).Render(line))
+			b.WriteString(m.theme.ItemSel.Width(width - 2).Render("▶ " + line))
 		} else {
-			line = "  " + line
-			b.WriteString(m.theme.Item.Render(line))
+			b.WriteString(m.theme.Item.Render("  " + line))
 		}
 		b.WriteString("\n")
 	}
 	return m.theme.BoxFocused.Width(width - 2).Height(height).Render(b.String())
 }
 
+func typeLabel(t alias.Type) string {
+	return strings.ToUpper(i18n.T("type_" + string(t)))
+}
+
 func (m *model) renderPreview(a alias.Alias, width, height int) string {
 	var b strings.Builder
+	t := alias.Resolve(a)
+	b.WriteString(m.theme.TypeBadge(t, typeLabel(t)))
+	b.WriteString("  ")
 	b.WriteString(m.theme.Title.Render(a.Name))
 	b.WriteString("\n")
-	b.WriteString(m.theme.URL.Render(a.URL))
+	b.WriteString(m.theme.URL.Render(a.Target))
 	b.WriteString("\n\n")
 	if len(a.Tags) > 0 {
 		tags := make([]string, 0, len(a.Tags))

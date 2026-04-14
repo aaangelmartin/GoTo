@@ -64,7 +64,7 @@ func newLsCmd() *cobra.Command {
 				if tagFilter != "" && !a.HasTag(tagFilter) {
 					continue
 				}
-				t.Row(a.Name, a.URL, strings.Join(a.Tags, ", "), fmt.Sprintf("%d", a.HitCount))
+				t.Row(a.Name, a.Target, strings.Join(a.Tags, ", "), fmt.Sprintf("%d", a.HitCount))
 			}
 			fmt.Fprintln(cmd.OutOrStdout(), t.Render())
 			return nil

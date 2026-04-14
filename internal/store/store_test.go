@@ -15,7 +15,7 @@ func TestRoundTrip(t *testing.T) {
 	if err := s.Load(); err != nil {
 		t.Fatalf("load empty: %v", err)
 	}
-	a := alias.Alias{Name: "gh", URL: "https://github.com", Tags: []string{"dev"}, CreatedAt: time.Now()}
+	a := alias.Alias{Name: "gh", Target: "https://github.com", Type: alias.TypeURL, Tags: []string{"dev"}, CreatedAt: time.Now()}
 	if err := s.Put(a); err != nil {
 		t.Fatalf("put: %v", err)
 	}
@@ -34,8 +34,8 @@ func TestRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get: %v", err)
 	}
-	if got.URL != a.URL {
-		t.Errorf("url mismatch: %s", got.URL)
+	if got.Target != a.Target {
+		t.Errorf("target mismatch: %s", got.Target)
 	}
 	if err := s2.Delete("gh"); err != nil {
 		t.Fatalf("delete: %v", err)

@@ -11,12 +11,38 @@ import (
 )
 
 // Config is the user-facing configuration.
+//
+// TOML layout:
+//
+//	browser         = "default"
+//	search_engine   = "https://www.google.com/search?q={q}"
+//	theme           = "default"
+//	language        = "auto"          # auto | en | es
+//	confirm_delete  = true
+//	fuzzy_threshold = 0.4
+//	default_action  = "auto"          # auto | url | file | directory
+//	terminal        = ""              # for ssh; empty = OS default
+//	directory_mode  = "shell"         # shell | finder
+//
+//	[openers]
+//	url       = "default"
+//	mailto    = "default"
+//	ssh       = ""
+//	file      = "default"
+//	directory = ""
+//	".pdf"    = "Preview"
+//	".md"     = "cursor"
 type Config struct {
-	Browser        string  `toml:"browser"`
-	SearchEngine   string  `toml:"search_engine"`
-	Theme          string  `toml:"theme"`
-	ConfirmDelete  bool    `toml:"confirm_delete"`
-	FuzzyThreshold float64 `toml:"fuzzy_threshold"`
+	Browser        string            `toml:"browser"`
+	SearchEngine   string            `toml:"search_engine"`
+	Theme          string            `toml:"theme"`
+	Language       string            `toml:"language"`
+	ConfirmDelete  bool              `toml:"confirm_delete"`
+	FuzzyThreshold float64           `toml:"fuzzy_threshold"`
+	DefaultAction  string            `toml:"default_action"`
+	Terminal       string            `toml:"terminal"`
+	DirectoryMode  string            `toml:"directory_mode"`
+	Openers        map[string]string `toml:"openers"`
 }
 
 // Default returns the zero-value-safe defaults.
@@ -25,8 +51,18 @@ func Default() Config {
 		Browser:        "default",
 		SearchEngine:   "https://www.google.com/search?q={q}",
 		Theme:          "default",
+		Language:       "auto",
 		ConfirmDelete:  true,
 		FuzzyThreshold: 0.4,
+		DefaultAction:  "auto",
+		DirectoryMode:  "shell",
+		Openers: map[string]string{
+			"url":       "default",
+			"mailto":    "default",
+			"ssh":       "",
+			"file":      "default",
+			"directory": "",
+		},
 	}
 }
 
@@ -43,6 +79,15 @@ func Load(path string) (Config, error) {
 	}
 	if _, err := toml.Decode(string(b), &cfg); err != nil {
 		return cfg, err
+	}
+	// Merge openers: ensure default keys exist even if the user omitted them.
+	if cfg.Openers == nil {
+		cfg.Openers = map[string]string{}
+	}
+	for k, v := range Default().Openers {
+		if _, ok := cfg.Openers[k]; !ok {
+			cfg.Openers[k] = v
+		}
 	}
 	return cfg, nil
 }

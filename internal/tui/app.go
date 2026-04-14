@@ -142,7 +142,7 @@ func (m *model) filteredItems() []alias.Alias {
 			continue
 		}
 		if strings.Contains(strings.ToLower(a.Name), q) ||
-			strings.Contains(strings.ToLower(a.URL), q) ||
+			strings.Contains(strings.ToLower(a.Target), q) ||
 			strings.Contains(strings.ToLower(a.Description), q) {
 			out = append(out, a)
 			continue
@@ -201,7 +201,7 @@ func (m *model) footerView() string {
 func (m *model) openAlias(a alias.Alias) tea.Cmd {
 	return func() tea.Msg {
 		browser := m.cfg.Browser
-		if err := urlx.Open(a.URL, browser); err != nil {
+		if err := urlx.Open(a.Target, browser); err != nil {
 			return openedMsg{err: err}
 		}
 		a.HitCount++
