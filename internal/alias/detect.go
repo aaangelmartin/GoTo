@@ -113,7 +113,8 @@ func isWindowsDrivePath(t string) bool {
 	if len(t) < 3 {
 		return false
 	}
-	if !((t[0] >= 'a' && t[0] <= 'z') || (t[0] >= 'A' && t[0] <= 'Z')) {
+	isLetter := (t[0] >= 'a' && t[0] <= 'z') || (t[0] >= 'A' && t[0] <= 'Z')
+	if !isLetter {
 		return false
 	}
 	return t[1] == ':' && (t[2] == '\\' || t[2] == '/')
