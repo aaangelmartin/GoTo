@@ -1,0 +1,37 @@
+version: "2"
+
+run:
+  timeout: 3m
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - revive
+  settings:
+    errcheck:
+      exclude-functions:
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Fprint
+        - (io.Closer).Close
+        - (*os.File).Close
+        - os.Remove
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: var-naming
+          disabled: true
+
+formatters:
+  enable:
+    - gofmt
+
+issues:
+  max-same-issues: 0
