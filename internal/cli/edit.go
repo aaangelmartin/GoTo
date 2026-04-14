@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/aaangelmartin/goto/internal/i18n"
 	"github.com/aaangelmartin/goto/internal/urlx"
 )
 
@@ -18,7 +19,7 @@ func newEditCmd() *cobra.Command {
 	)
 	cmd := &cobra.Command{
 		Use:   "edit <name>",
-		Short: "Edit an existing alias",
+		Short: i18n.T("edit_short"),
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
@@ -47,7 +48,7 @@ func newEditCmd() *cobra.Command {
 			}
 			if rename != "" && rename != a.Name {
 				if _, err := st.Get(rename); err == nil {
-					return fmt.Errorf("alias %q already exists", rename)
+					return fmt.Errorf(i18n.T("edit_exists"), rename)
 				}
 				if err := st.Delete(a.Name); err != nil {
 					return err
@@ -58,13 +59,13 @@ func newEditCmd() *cobra.Command {
 			if err := st.Save(); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "updated: %s -> %s\n", a.Name, a.URL)
+			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("updated"), a.Name, a.URL)
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&newURL, "url", "", "new URL")
-	cmd.Flags().StringVar(&newDesc, "desc", "", "new description")
-	cmd.Flags().StringVar(&newTags, "tag", "", "replace tags (comma-separated)")
-	cmd.Flags().StringVar(&rename, "name", "", "rename the alias")
+	cmd.Flags().StringVar(&newURL, "url", "", i18n.T("edit_url"))
+	cmd.Flags().StringVar(&newDesc, "desc", "", i18n.T("edit_desc"))
+	cmd.Flags().StringVar(&newTags, "tag", "", i18n.T("edit_tag"))
+	cmd.Flags().StringVar(&rename, "name", "", i18n.T("edit_name"))
 	return cmd
 }

@@ -8,15 +8,16 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/aaangelmartin/goto/internal/alias"
+	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
 func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case openedMsg:
 		if msg.err != nil {
-			m.setStatus("error: " + msg.err.Error())
+			m.setStatus(i18n.Tf("tui_status_err", msg.err.Error()))
 		} else {
-			m.setStatus("opened " + msg.alias.Name)
+			m.setStatus(i18n.Tf("tui_status_opened", msg.alias.Name))
 			m.refresh()
 		}
 		return m, nil
@@ -67,20 +68,20 @@ func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			filtered := m.filteredItems()
 			if m.cursor < len(filtered) {
 				if err := copyClipboard(filtered[m.cursor].URL); err != nil {
-					m.setStatus("copy failed: " + err.Error())
+					m.setStatus(i18n.Tf("tui_status_copyfail", err.Error()))
 				} else {
-					m.setStatus("copied " + filtered[m.cursor].URL)
+					m.setStatus(i18n.Tf("tui_status_copied", filtered[m.cursor].URL))
 				}
 			}
 		case "t":
 			filtered := m.filteredItems()
 			if m.tagFilter != "" {
 				m.tagFilter = ""
-				m.setStatus("cleared tag filter")
+				m.setStatus(i18n.T("tui_status_tag_clear"))
 			} else if m.cursor < len(filtered) && len(filtered[m.cursor].Tags) > 0 {
 				m.tagFilter = filtered[m.cursor].Tags[0]
 				m.cursor = 0
-				m.setStatus("filtering by #" + m.tagFilter)
+				m.setStatus(i18n.Tf("tui_status_tag_set", m.tagFilter))
 			}
 		case "enter":
 			filtered := m.filteredItems()
@@ -144,12 +145,11 @@ func (m *model) rightWidth() int {
 
 func (m *model) listView() string {
 	if len(m.items) == 0 {
-		msg := "no aliases yet\n\npress  a  to add your first one"
 		return m.theme.Box.
 			Width(m.innerWidth()-2).
 			Height(m.innerHeight()).
 			Align(lipgloss.Center, lipgloss.Center).
-			Render(m.theme.Empty.Render(msg))
+			Render(m.theme.Empty.Render(i18n.T("tui_empty")))
 	}
 
 	filtered := m.filteredItems()
@@ -158,7 +158,7 @@ func (m *model) listView() string {
 			Width(m.innerWidth()-2).
 			Height(m.innerHeight()).
 			Align(lipgloss.Center, lipgloss.Center).
-			Render(m.theme.Empty.Render("no matches"))
+			Render(m.theme.Empty.Render(i18n.T("tui_no_matches")))
 	}
 
 	if m.cursor >= len(filtered) {
@@ -225,13 +225,13 @@ func (m *model) renderPreview(a alias.Alias, width, height int) string {
 		b.WriteString(m.theme.Desc.Render(wrap(a.Description, width-4)))
 		b.WriteString("\n\n")
 	}
-	b.WriteString(m.theme.Status.Render(fmt.Sprintf("%d opens", a.HitCount)))
+	b.WriteString(m.theme.Status.Render(i18n.Tf("tui_opens", a.HitCount)))
 	if !a.LastOpened.IsZero() {
-		b.WriteString(m.theme.Status.Render("  ·  last " + a.LastOpened.Format("2006-01-02 15:04")))
+		b.WriteString(m.theme.Status.Render("  ·  " + i18n.Tf("tui_last", a.LastOpened.Format("2006-01-02 15:04"))))
 	}
 	if !a.CreatedAt.IsZero() {
 		b.WriteString("\n")
-		b.WriteString(m.theme.Status.Render("created " + a.CreatedAt.Format("2006-01-02")))
+		b.WriteString(m.theme.Status.Render(i18n.Tf("tui_created", a.CreatedAt.Format("2006-01-02"))))
 	}
 	return m.theme.Box.Width(width - 2).Height(height).Render(b.String())
 }

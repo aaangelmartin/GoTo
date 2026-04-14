@@ -8,18 +8,18 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/aaangelmartin/goto/internal/config"
+	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
 func newConfigCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
-		Short: "Open the config file in $EDITOR (or print its path)",
+		Short: i18n.T("config_short"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			path, err := config.ConfigPath()
 			if err != nil {
 				return err
 			}
-			// Ensure file exists so the editor doesn't open an empty buffer
 			if _, err := os.Stat(path); os.IsNotExist(err) {
 				if err := config.Save(path, config.Default()); err != nil {
 					return err
@@ -39,7 +39,7 @@ func newConfigCmd() *cobra.Command {
 	}
 	cmd.AddCommand(&cobra.Command{
 		Use:   "path",
-		Short: "Print the config file path",
+		Short: i18n.T("config_path_short"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			path, err := config.ConfigPath()
 			if err != nil {

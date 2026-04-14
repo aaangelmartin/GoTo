@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/aaangelmartin/goto/internal/alias"
+	"github.com/aaangelmartin/goto/internal/i18n"
 	"github.com/aaangelmartin/goto/internal/store"
 	"github.com/aaangelmartin/goto/internal/urlx"
 )
@@ -40,10 +41,10 @@ func newFormModel(th Theme) formModel {
 	}
 	return formModel{
 		inputs: [4]textinput.Model{
-			mk("alias name (e.g. gh)", 40),
-			mk("url (e.g. github.com)", 60),
-			mk("tags, comma separated", 40),
-			mk("description (optional)", 60),
+			mk(i18n.T("tui_placeholder_name"), 40),
+			mk(i18n.T("tui_placeholder_url"), 60),
+			mk(i18n.T("tui_placeholder_tags"), 40),
+			mk(i18n.T("tui_placeholder_desc"), 60),
 		},
 		theme: th,
 	}
@@ -81,7 +82,7 @@ func (m *model) updateForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.refresh()
-				m.setStatus("saved")
+				m.setStatus(i18n.T("tui_status_saved"))
 				m.screen = screenList
 				return m, nil
 			}
@@ -159,18 +160,24 @@ type formErr string
 
 func (e formErr) Error() string { return string(e) }
 
+// These sentinels carry i18n keys; we translate when rendering.
 const (
-	errEmptyName   formErr = "name is required"
-	errEmptyURL    formErr = "url is required"
-	errInvalidName formErr = "name must not contain spaces or slashes"
+	errEmptyName   formErr = "err_empty_name"
+	errEmptyURL    formErr = "err_empty_url"
+	errInvalidName formErr = "err_invalid_name"
 )
 
 func (m *model) formView() string {
-	labels := []string{"name", "url", "tags", "description"}
+	labels := []string{
+		i18n.T("tui_field_name"),
+		i18n.T("tui_field_url"),
+		i18n.T("tui_field_tags"),
+		i18n.T("tui_field_desc"),
+	}
 	var b strings.Builder
-	title := "Add alias"
+	title := i18n.T("tui_form_add")
 	if m.formKind == formEdit {
-		title = "Edit alias"
+		title = i18n.T("tui_form_edit")
 	}
 	b.WriteString(m.theme.Title.Render(title))
 	b.WriteString("\n\n")
@@ -188,7 +195,7 @@ func (m *model) formView() string {
 		b.WriteString("\n\n")
 	}
 	if m.form.errMsg != "" {
-		b.WriteString(m.theme.Danger_.Render("✗ " + m.form.errMsg))
+		b.WriteString(m.theme.Danger_.Render("✗ " + i18n.T(m.form.errMsg)))
 		b.WriteString("\n")
 	}
 	return m.theme.BoxFocused.Width(m.innerWidth() - 2).Height(m.innerHeight()).Render(b.String())
