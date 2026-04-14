@@ -32,7 +32,7 @@ func newEditCmd() *cobra.Command {
 				return err
 			}
 			if newURL != "" {
-				a.URL = urlx.Normalize(newURL, flags.noHTTPS)
+				a.Target = urlx.Normalize(newURL, flags.noHTTPS)
 			}
 			if cmd.Flags().Changed("desc") {
 				a.Description = newDesc
@@ -59,7 +59,7 @@ func newEditCmd() *cobra.Command {
 			if err := st.Save(); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("updated"), a.Name, a.URL)
+			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("updated"), a.Name, a.Target)
 			return nil
 		},
 	}

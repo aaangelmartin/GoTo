@@ -30,6 +30,7 @@ func (m *model) helpView() string {
 		{"d, x", i18n.T("help_delete")},
 		{"y", i18n.T("help_yank")},
 		{"t", i18n.T("help_tag")},
+		{"L", i18n.T("help_lang")},
 		{"?", i18n.T("help_toggle")},
 		{"q, ctrl+c", i18n.T("help_quit")},
 	}
