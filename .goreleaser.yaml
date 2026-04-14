@@ -31,7 +31,9 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - LICENSE
+      - NOTICE
       - README.md
+      - README.es.md
       - CHANGELOG.md
     format_overrides:
       - goos: windows
@@ -96,7 +98,7 @@ brews:
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     homepage: "https://github.com/aaangelmartin/GoTo"
     description: "Open URLs and manage link aliases from the terminal"
-    license: MIT
+    license: Apache-2.0
     directory: Formula
     commit_author:
       name: goreleaserbot

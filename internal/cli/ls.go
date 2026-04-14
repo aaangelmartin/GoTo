@@ -8,6 +8,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
+
+	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
 func newLsCmd() *cobra.Command {
@@ -15,7 +17,7 @@ func newLsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ls",
 		Aliases: []string{"list"},
-		Short:   "List all aliases",
+		Short:   i18n.T("ls_short"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, st, err := loadState()
 			if err != nil {
@@ -28,7 +30,7 @@ func newLsCmd() *cobra.Command {
 				return enc.Encode(aliases)
 			}
 			if len(aliases) == 0 {
-				fmt.Fprintln(cmd.OutOrStdout(), "no aliases yet — try: goto add <name> <url>")
+				fmt.Fprintln(cmd.OutOrStdout(), i18n.T("ls_empty"))
 				return nil
 			}
 
@@ -41,7 +43,7 @@ func newLsCmd() *cobra.Command {
 			t := table.New().
 				Border(lipgloss.RoundedBorder()).
 				BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("#44475A"))).
-				Headers("NAME", "URL", "TAGS", "HITS").
+				Headers(i18n.T("ls_col_name"), i18n.T("ls_col_url"), i18n.T("ls_col_tags"), i18n.T("ls_col_hits")).
 				StyleFunc(func(row, col int) lipgloss.Style {
 					if row == table.HeaderRow {
 						return header.PaddingLeft(1).PaddingRight(1)
@@ -68,7 +70,7 @@ func newLsCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&tagFilter, "tag", "", "filter by tag")
-	cmd.Flags().BoolVar(&flags.useJSON, "json", false, "output as JSON")
+	cmd.Flags().StringVar(&tagFilter, "tag", "", i18n.T("ls_tag"))
+	cmd.Flags().BoolVar(&flags.useJSON, "json", false, i18n.T("ls_json"))
 	return cmd
 }
