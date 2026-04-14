@@ -11,6 +11,7 @@ import (
 
 	"github.com/aaangelmartin/goto/internal/alias"
 	"github.com/aaangelmartin/goto/internal/config"
+	"github.com/aaangelmartin/goto/internal/i18n"
 	"github.com/aaangelmartin/goto/internal/store"
 	"github.com/aaangelmartin/goto/internal/urlx"
 )
@@ -168,7 +169,7 @@ func (m *model) refresh() {
 
 func (m *model) headerView() string {
 	title := m.theme.Title.Render(" goto ")
-	sub := m.theme.Subtitle.Render(fmt.Sprintf("%d aliases", len(m.items)))
+	sub := m.theme.Subtitle.Render(i18n.Tf("tui_aliases_count", len(m.items)))
 	filter := ""
 	if m.filterMode || m.filter != "" {
 		filter = m.theme.Status.Render(fmt.Sprintf("  /%s", m.filter))
@@ -185,13 +186,13 @@ func (m *model) footerView() string {
 	}
 	switch m.screen {
 	case screenList:
-		return m.theme.Help.Render(" enter open · a add · e edit · d delete · / filter · t tag · y copy · ? help · q quit")
+		return m.theme.Help.Render(i18n.T("tui_help_list"))
 	case screenForm:
-		return m.theme.Help.Render(" tab next · shift+tab prev · enter save · esc cancel")
+		return m.theme.Help.Render(i18n.T("tui_help_form"))
 	case screenConfirm:
-		return m.theme.Help.Render(" y/n · enter confirm · esc cancel")
+		return m.theme.Help.Render(i18n.T("tui_help_confirm"))
 	case screenHelp:
-		return m.theme.Help.Render(" esc back")
+		return m.theme.Help.Render(i18n.T("tui_help_back"))
 	}
 	return ""
 }
