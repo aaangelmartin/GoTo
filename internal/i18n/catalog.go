@@ -129,6 +129,26 @@ var catalog = map[Lang]map[string]string{
 		"tui_lang_switched":         "language set to %s (permanent)",
 		"help_lang":                 "cycle interface language (persisted)",
 
+		// First-run onboarding
+		"onb_welcome_title":    "Welcome to goto ✦",
+		"onb_welcome_body":     "You're about to set up goto — a single command for URLs, files, directories, mail and SSH hosts.\nThis 30-second wizard picks your defaults (everything is editable later in ~/.config/goto/config.toml).",
+		"onb_welcome_tip":      "press enter to begin  ·  esc to skip with defaults",
+		"onb_lang_title":       "Language",
+		"onb_lang_desc":        "Choose the interface language. 'auto' follows $LANG.",
+		"onb_theme_title":      "Theme",
+		"onb_theme_desc":       "All themes use the same accent (#00B5E2); pick the background palette you like.",
+		"onb_browser_title":    "Default browser",
+		"onb_browser_desc":     "Which browser opens URL aliases. 'default' follows your OS preference.",
+		"onb_action_title":     "Default action",
+		"onb_action_desc":      "What happens when you run `goto X` and X is not an alias: auto-detects type (recommended), or force url/file/directory.",
+		"onb_firstalias_title": "Add your first alias (optional)",
+		"onb_firstalias_desc":  "Try something like `gh → github.com/aaangelmartin`. You can always add more with `goto add` or in the TUI.",
+		"onb_firstalias_skip":  "tab switches fields · enter saves (or skips if empty) · esc skips",
+		"onb_done_title":       "You're all set 🎉",
+		"onb_done_body":        "Tip: for directory aliases to cd your shell, source the wrapper once:\n    eval \"$(goto shell-init zsh)\"\n(replace zsh with bash or fish)",
+		"onb_done_tip":         "press enter to start",
+		"onb_footer":           " ↑/↓ choose · enter next · ← back · esc skip wizard · q quit",
+
 		// TUI — help rows
 		"help_move":   "move selection",
 		"help_jump":   "jump to top / bottom",
@@ -267,6 +287,26 @@ var catalog = map[Lang]map[string]string{
 		"type_auto":                 "auto",
 		"tui_lang_switched":         "idioma establecido a %s (permanente)",
 		"help_lang":                 "cambiar idioma (se guarda)",
+
+		// Onboarding inicial
+		"onb_welcome_title":    "Bienvenido a goto ✦",
+		"onb_welcome_body":     "Vas a configurar goto — un único comando para URLs, archivos, directorios, mail y hosts SSH.\nEste asistente de 30 segundos elige tus valores por defecto (todo editable luego en ~/.config/goto/config.toml).",
+		"onb_welcome_tip":      "pulsa enter para empezar  ·  esc para saltar con los valores por defecto",
+		"onb_lang_title":       "Idioma",
+		"onb_lang_desc":        "Elige el idioma de la interfaz. 'auto' sigue $LANG.",
+		"onb_theme_title":      "Tema",
+		"onb_theme_desc":       "Todos los temas usan el mismo acento (#00B5E2); elige la paleta de fondo que prefieras.",
+		"onb_browser_title":    "Navegador por defecto",
+		"onb_browser_desc":     "Qué navegador abrirá los alias de tipo URL. 'default' respeta tu preferencia del SO.",
+		"onb_action_title":     "Acción por defecto",
+		"onb_action_desc":      "Qué pasa al ejecutar `goto X` si X no es un alias: autodetecta el tipo (recomendado), o fuerza url/file/directory.",
+		"onb_firstalias_title": "Añade tu primer alias (opcional)",
+		"onb_firstalias_desc":  "Prueba algo como `gh → github.com/aaangelmartin`. Siempre puedes añadir más con `goto add` o desde la TUI.",
+		"onb_firstalias_skip":  "tab cambia de campo · enter guarda (o salta si está vacío) · esc salta",
+		"onb_done_title":       "¡Listo! 🎉",
+		"onb_done_body":        "Tip: para que los alias de directorio cambien tu shell, sourcea el wrapper una vez:\n    eval \"$(goto shell-init zsh)\"\n(sustituye zsh por bash o fish)",
+		"onb_done_tip":         "pulsa enter para empezar",
+		"onb_footer":           " ↑/↓ elegir · enter siguiente · ← volver · esc saltar asistente · q salir",
 
 		// TUI — help rows
 		"help_move":   "mover selección",

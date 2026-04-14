@@ -10,12 +10,13 @@
 
 ### Open anything from your terminal — URLs, files, directories, mail, SSH hosts.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/aaangelmartin/GoTo/ci.yml?branch=main&label=CI&color=00B5E2)](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/aaangelmartin/GoTo?sort=semver&color=00B5E2)](https://github.com/aaangelmartin/GoTo/releases/latest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-00B5E2)](./LICENSE)
-[![Go Report](https://goreportcard.com/badge/github.com/aaangelmartin/goto)](https://goreportcard.com/report/github.com/aaangelmartin/goto)
-[![Languages](https://img.shields.io/badge/lang-EN%20%C2%B7%20ES-00B5E2)](./README.es.md)
-[![Made with Charm](https://img.shields.io/badge/made%20with-Charm-00B5E2)](https://charm.sh)
+[![CI](https://img.shields.io/github/actions/workflow/status/aaangelmartin/GoTo/ci.yml?branch=main&label=CI&style=for-the-badge&labelColor=000000&color=22D3A6)](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/aaangelmartin/GoTo?sort=semver&style=for-the-badge&labelColor=000000&color=00B5E2)](https://github.com/aaangelmartin/GoTo/releases/latest)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-D22128?style=for-the-badge&labelColor=000000)](./LICENSE)
+[![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8?style=for-the-badge&labelColor=000000&logo=go&logoColor=white)](https://go.dev)
+[![Made with Charm](https://img.shields.io/badge/made%20with-Charm-FF79C6?style=for-the-badge&labelColor=000000)](https://charm.sh)
+[![Languages](https://img.shields.io/badge/lang-EN%20%C2%B7%20ES-00B5E2?style=for-the-badge&labelColor=000000)](./README.es.md)
+[![Homebrew](https://img.shields.io/badge/brew-aaangelmartin%2Ftap%2Fgoto-F9C900?style=for-the-badge&labelColor=000000)](https://github.com/aaangelmartin/homebrew-tap)
 
 **English** · [Español](./README.es.md)
 
@@ -39,6 +40,7 @@ $ goto                               # no args      → interactive TUI
 
 ### What makes it different
 
+- **First-run wizard** — the first time you launch `goto` with no config it drops you into a 30-second TUI that picks your language, theme, default browser and default action, then offers to create your first alias.
 - **Zero-friction URLs** — auto-prepends `https://` when missing; respects every known scheme (`http`, `mailto`, `ssh`, `file`, `sftp`, `chrome`, …).
 - **Everything is an alias** — URLs, emails, SSH hosts, files, directories, even raw shell commands. Each alias remembers its type, so `goto dev` can `cd`, `goto pdfs` can open Preview, and `goto gh` can open your browser.
 - **Smart auto-detection** — `goto` inspects the target and picks the right opener: path exists on disk → file/dir; email-shaped → mailto; `ssh://` or `user@host` → SSH; bare domain → URL. Override with `--type` or `default_action` in config.
