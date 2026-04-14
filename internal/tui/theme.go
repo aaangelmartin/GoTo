@@ -49,22 +49,25 @@ func (t Theme) TypeBadge(typ alias.Type, label string) string {
 }
 
 func themeByName(name string) Theme {
+	// Each theme uses its own signature accent so they read as distinct
+	// palettes. The project brand cyan (#00B5E2) is kept as the "default"
+	// theme and appears as a secondary accent in a few others.
 	switch name {
 	case "dracula":
 		return build("dracula",
-			"#00B5E2", "#00D4FF", "#F8F8F2", "#6272A4",
+			"#FF79C6", "#8BE9FD", "#F8F8F2", "#6272A4",
 			"#282A36", "#44475A", "#50FA7B", "#FF5555", "#F1FA8C", "#44475A")
 	case "catppuccin", "catppuccin-mocha":
 		return build("catppuccin",
-			"#00B5E2", "#89DCEB", "#CDD6F4", "#6C7086",
+			"#CBA6F7", "#89DCEB", "#CDD6F4", "#6C7086",
 			"#1E1E2E", "#313244", "#A6E3A1", "#F38BA8", "#F9E2AF", "#45475A")
 	case "nord":
 		return build("nord",
-			"#00B5E2", "#88C0D0", "#ECEFF4", "#4C566A",
+			"#88C0D0", "#81A1C1", "#ECEFF4", "#4C566A",
 			"#2E3440", "#3B4252", "#A3BE8C", "#BF616A", "#EBCB8B", "#434C5E")
 	case "tokyonight":
 		return build("tokyonight",
-			"#00B5E2", "#7AA2F7", "#C0CAF5", "#565F89",
+			"#BB9AF7", "#7AA2F7", "#C0CAF5", "#565F89",
 			"#1A1B26", "#24283B", "#9ECE6A", "#F7768E", "#E0AF68", "#3B4261")
 	default:
 		return build("default",

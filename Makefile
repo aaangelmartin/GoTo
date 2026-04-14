@@ -15,9 +15,12 @@ help: ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 .PHONY: build
-build: ## Build the binary to ./bin/goto
+build: ## Build the binary to ./bin/goto (ad-hoc signs on macOS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags '$(LDFLAGS)' -o $(BIN_DIR)/$(BINARY) ./cmd/goto
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		codesign --force --sign - $(BIN_DIR)/$(BINARY) 2>/dev/null || true; \
+	fi
 
 .PHONY: install
 install: ## Install to $GOBIN

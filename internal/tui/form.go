@@ -14,9 +14,22 @@ import (
 	"github.com/aaangelmartin/goto/internal/urlx"
 )
 
+// formTypes is the cycle order shown on the Type field. Order chosen to
+// surface the most-used types first.
+var formTypes = []alias.Type{
+	alias.TypeAuto,
+	alias.TypeURL,
+	alias.TypeMailto,
+	alias.TypeSSH,
+	alias.TypeFile,
+	alias.TypeDirectory,
+	alias.TypeCommand,
+}
+
 type formModel struct {
-	inputs  [4]textinput.Model // name, url, tags, desc
-	focused int
+	inputs  [4]textinput.Model // name, target, tags, desc
+	typeIdx int                // index into formTypes; Type field is a selector, not a textinput
+	focused int                // 0..3 = inputs, 4 = type selector
 	errMsg  string
 	editing string // non-empty means editing an existing alias (by name)
 	theme   Theme
@@ -56,27 +69,49 @@ func (f *formModel) focusFirst() tea.Cmd {
 	return textinput.Blink
 }
 
+// totalFields = 4 text inputs + 1 type selector.
+const formFieldCount = 5
+
 func (f *formModel) loadFrom(a alias.Alias) {
 	f.editing = a.Name
 	f.inputs[0].SetValue(a.Name)
 	f.inputs[1].SetValue(a.Target)
 	f.inputs[2].SetValue(strings.Join(a.Tags, ", "))
 	f.inputs[3].SetValue(a.Description)
+	// Position the type cycle on the alias's stored type (default to auto).
+	f.typeIdx = 0
+	for i, t := range formTypes {
+		if t == a.Type {
+			f.typeIdx = i
+			break
+		}
+	}
 }
 
 func (m *model) updateForm(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
+	if km, ok := msg.(tea.KeyMsg); ok {
+		switch km.String() {
 		case "esc":
 			m.screen = screenList
 			return m, nil
 		case "tab", "down":
+			// On the Type field, Down cycles the type instead of moving focus
+			// away — only Tab moves off the selector.
+			if m.form.focused == 4 && km.String() == "down" {
+				m.form.typeIdx = (m.form.typeIdx + 1) % len(formTypes)
+				return m, nil
+			}
 			m.form.nextField()
+			return m, nil
 		case "shift+tab", "up":
+			if m.form.focused == 4 && km.String() == "up" {
+				m.form.typeIdx = (m.form.typeIdx - 1 + len(formTypes)) % len(formTypes)
+				return m, nil
+			}
 			m.form.prevField()
+			return m, nil
 		case "enter":
-			if m.form.focused == len(m.form.inputs)-1 {
+			if m.form.focused == formFieldCount-1 {
 				if err := m.form.submit(m.store); err != nil {
 					m.form.errMsg = err.Error()
 					return m, nil
@@ -87,32 +122,45 @@ func (m *model) updateForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.form.nextField()
+			return m, nil
 		}
 	}
 
+	// Type selector isn't a textinput — ignore other keys when focused there.
+	if m.form.focused == 4 {
+		return m, nil
+	}
 	var cmd tea.Cmd
 	m.form.inputs[m.form.focused], cmd = m.form.inputs[m.form.focused].Update(msg)
 	return m, cmd
 }
 
 func (f *formModel) nextField() {
-	f.inputs[f.focused].Blur()
-	f.focused = (f.focused + 1) % len(f.inputs)
-	f.inputs[f.focused].Focus()
+	if f.focused < 4 {
+		f.inputs[f.focused].Blur()
+	}
+	f.focused = (f.focused + 1) % formFieldCount
+	if f.focused < 4 {
+		f.inputs[f.focused].Focus()
+	}
 }
 func (f *formModel) prevField() {
-	f.inputs[f.focused].Blur()
-	f.focused = (f.focused - 1 + len(f.inputs)) % len(f.inputs)
-	f.inputs[f.focused].Focus()
+	if f.focused < 4 {
+		f.inputs[f.focused].Blur()
+	}
+	f.focused = (f.focused - 1 + formFieldCount) % formFieldCount
+	if f.focused < 4 {
+		f.inputs[f.focused].Focus()
+	}
 }
 
 func (f *formModel) submit(st *store.Store) error {
 	name := strings.TrimSpace(f.inputs[0].Value())
-	rawURL := strings.TrimSpace(f.inputs[1].Value())
+	rawTarget := strings.TrimSpace(f.inputs[1].Value())
 	if name == "" {
 		return errEmptyName
 	}
-	if rawURL == "" {
+	if rawTarget == "" {
 		return errEmptyURL
 	}
 	if strings.ContainsAny(name, " \t/\\") {
@@ -126,16 +174,21 @@ func (f *formModel) submit(st *store.Store) error {
 		}
 	}
 
-	// For URL-looking targets we auto-prepend https://; otherwise keep as-is
-	// so mailto:, ssh://, file://, paths and commands survive unchanged.
-	target := rawURL
-	if detected := alias.Detect(rawURL); detected == alias.TypeURL {
-		target = urlx.Normalize(rawURL, false)
+	chosenType := formTypes[f.typeIdx]
+	target := rawTarget
+	// Only normalize when the user left the type on auto AND the detector
+	// thinks it's a URL; otherwise preserve the raw string so paths, mail,
+	// ssh short-form and commands survive the round-trip intact.
+	if chosenType == alias.TypeAuto && alias.Detect(rawTarget) == alias.TypeURL {
+		target = urlx.Normalize(rawTarget, false)
+	} else if chosenType == alias.TypeURL {
+		target = urlx.Normalize(rawTarget, false)
 	}
+
 	a := alias.Alias{
 		Name:        name,
 		Target:      target,
-		Type:        alias.TypeAuto,
+		Type:        chosenType,
 		Tags:        tags,
 		Description: strings.TrimSpace(f.inputs[3].Value()),
 	}
@@ -180,6 +233,7 @@ func (m *model) formView() string {
 		i18n.T("tui_field_url"),
 		i18n.T("tui_field_tags"),
 		i18n.T("tui_field_desc"),
+		i18n.T("tui_field_type"),
 	}
 	var b strings.Builder
 	title := i18n.T("tui_form_add")
@@ -197,8 +251,24 @@ func (m *model) formView() string {
 		}
 		b.WriteString(label)
 		b.WriteString("\n")
-		b.WriteString("  ")
-		b.WriteString(m.form.inputs[i].View())
+
+		if i == 4 {
+			// Type selector row.
+			t := formTypes[m.form.typeIdx]
+			badge := m.theme.TypeBadge(t, strings.ToUpper(i18n.T("type_"+string(t))))
+			if i == m.form.focused {
+				b.WriteString("  ")
+				b.WriteString(badge)
+				b.WriteString("  ")
+				b.WriteString(m.theme.Help.Render(i18n.T("tui_type_hint")))
+			} else {
+				b.WriteString("  ")
+				b.WriteString(badge)
+			}
+		} else {
+			b.WriteString("  ")
+			b.WriteString(m.form.inputs[i].View())
+		}
 		b.WriteString("\n\n")
 	}
 	if m.form.errMsg != "" {

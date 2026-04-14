@@ -87,6 +87,11 @@ func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.setStatus(i18n.Tf("tui_status_copied", filtered[m.cursor].Target))
 				}
 			}
+		case "o":
+			// Open the in-TUI Settings screen (editing config.toml in
+			// $EDITOR doesn't work while Bubble Tea owns the altscreen).
+			m.openSettings()
+			return m, nil
 		case "t":
 			filtered := m.filteredItems()
 			if m.tagFilter != "" {

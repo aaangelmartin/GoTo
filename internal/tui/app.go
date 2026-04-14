@@ -32,6 +32,7 @@ const (
 	screenConfirm
 	screenHelp
 	screenOnboard
+	screenSettings
 )
 
 type formMode int
@@ -51,6 +52,9 @@ type model struct {
 
 	// onboarding state
 	onboard onboardModel
+
+	// settings state
+	settings settingsModel
 
 	// list state
 	items      []alias.Alias
@@ -113,6 +117,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateHelp(msg)
 	case screenOnboard:
 		return m.updateOnboard(msg)
+	case screenSettings:
+		return m.updateSettings(msg)
 	}
 	return m, nil
 }
@@ -132,6 +138,8 @@ func (m *model) View() string {
 		body = m.helpView()
 	case screenOnboard:
 		body = m.onboardView()
+	case screenSettings:
+		body = m.settingsView()
 	}
 	return lipgloss.JoinVertical(lipgloss.Left, header, body, footer)
 }
@@ -208,6 +216,8 @@ func (m *model) footerView() string {
 		return m.theme.Help.Render(i18n.T("tui_help_back"))
 	case screenOnboard:
 		return "" // onboarding owns its own footer/help hints
+	case screenSettings:
+		return "" // settings has its own inline hint
 	}
 	return ""
 }

@@ -114,6 +114,7 @@ func newRootCmd() *cobra.Command {
 		newImportCmd(),
 		newExportCmd(),
 		newConfigCmd(),
+		newOpenerCmd(),
 		newCompletionCmd(),
 		newShellInitCmd(),
 		newVersionCmd(),
@@ -171,22 +172,41 @@ func resolveAndDispatch(target string, cfg config.Config, st *store.Store, cmd *
 		return fmt.Errorf(i18n.T("err_ambiguous"), target, candidateNames(matches))
 	}
 
-	// 3. no alias matched — treat the raw argument as a target.
+	// 3. no alias matched — treat the raw argument as a target. Detection
+	//    always wins: an unambiguous path opens as a file/dir, an email
+	//    opens as mailto, etc. default_action is only a tie-breaker for
+	//    genuinely ambiguous tokens (bare words with no scheme, no path
+	//    sentinel, no email shape).
 	adhoc := alias.Alias{Target: target, Type: alias.TypeAuto}
 	t := alias.Detect(target)
-	// Apply default_action override: if user forces "url", skip path detection.
-	switch cfg.DefaultAction {
-	case "url", "link":
-		t = alias.TypeURL
-	case "file":
-		t = alias.TypeFile
-	case "directory":
-		t = alias.TypeDirectory
+	if isAmbiguousToken(target) {
+		switch cfg.DefaultAction {
+		case "url", "link":
+			t = alias.TypeURL
+		case "file":
+			t = alias.TypeFile
+		case "directory":
+			t = alias.TypeDirectory
+		}
 	}
 	if t == alias.TypeURL {
 		adhoc.Target = urlx.Normalize(target, flags.noHTTPS)
 	}
 	return dispatchOpen(adhoc, t, cfg, cmd)
+}
+
+// isAmbiguousToken returns true when a raw argument could reasonably be
+// many things — a bare word like "notes" or "dev". Anything with a scheme,
+// an "@", a path sentinel, a dot or whitespace is unambiguous enough that
+// the detector's answer should stand.
+func isAmbiguousToken(s string) bool {
+	if s == "" {
+		return false
+	}
+	if strings.ContainsAny(s, ":@/.\\ \t~") {
+		return false
+	}
+	return true
 }
 
 func openAliasWithHit(a alias.Alias, cfg config.Config, st *store.Store, cmd *cobra.Command) error {

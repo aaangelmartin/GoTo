@@ -110,10 +110,12 @@ func (m *model) updateOnboard(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up", "k":
 			if m.onboard.choiceIdx > 0 {
 				m.onboard.choiceIdx--
+				m.previewStepChoice()
 			}
 		case "down", "j":
 			if opts := m.stepOptions(); m.onboard.choiceIdx < len(opts)-1 {
 				m.onboard.choiceIdx++
+				m.previewStepChoice()
 			}
 		case "enter", "right", " ", "tab":
 			m.advanceOnboardStep()
@@ -157,6 +159,16 @@ func (m *model) updateOnboardFirstAlias(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	m.onboard.aliasInputs[m.onboard.aliasFocus], cmd = m.onboard.aliasInputs[m.onboard.aliasFocus].Update(msg)
 	return m, cmd
+}
+
+// previewStepChoice applies step-local effects while the user is still
+// browsing options, so they SEE what they're picking. Currently just the
+// theme — switching it live lets palettes be compared at a glance.
+func (m *model) previewStepChoice() {
+	if m.onboard.step == stepTheme {
+		m.cfg.Theme = themeChoices[m.onboard.choiceIdx]
+		m.theme = themeByName(m.cfg.Theme)
+	}
 }
 
 func (m *model) advanceOnboardStep() {
