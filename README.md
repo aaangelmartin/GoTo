@@ -11,9 +11,11 @@
 
 [![CI](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml/badge.svg)](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/aaangelmartin/GoTo?sort=semver&color=%23FF79C6)](https://github.com/aaangelmartin/GoTo/releases/latest)
-[![License](https://img.shields.io/badge/license-MIT-8BE9FD)](./LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%202.0-8BE9FD)](./LICENSE)
 [![Go Report](https://goreportcard.com/badge/github.com/aaangelmartin/goto)](https://goreportcard.com/report/github.com/aaangelmartin/goto)
 [![Made with Charm](https://img.shields.io/badge/made%20with-%F0%9F%92%9C%20Charm-FF79C6)](https://charm.sh)
+
+**English** · [Español](./README.es.md)
 
 </div>
 
@@ -30,10 +32,11 @@ $ goto gh                   # opens your saved alias 'gh'
 $ goto                      # launches the interactive TUI
 ```
 
-- **Zero-friction URLs** — auto-prepends `https://` when missing, respects `http://`, `mailto:`, `ssh://`, `file://`, and any other protocol.
+- **Zero-friction URLs** — auto-prepends `https://` when missing; respects `http://`, `mailto:`, `ssh://`, `file://`, and any other protocol.
 - **Named aliases** — `gh`, `mail`, `jira`, `localhost3000`. Keep your muscle memory, stop typing URLs.
 - **Fuzzy matching** — `goto githu` still hits `github`.
-- **Beautiful TUI** — [Bubble Tea](https://github.com/charmbracelet/bubbletea) powered. Add, edit, delete, search, copy, by tag. Four built-in themes.
+- **Beautiful TUI** — [Bubble Tea](https://github.com/charmbracelet/bubbletea) powered. Add, edit, delete, search, copy, filter by tag. Four built-in themes.
+- **Bilingual** — English and Spanish interface auto-detected from `LANG`, overridable with `--lang`.
 - **Cross-platform** — macOS, Linux, Windows. Single static binary, ~5 MB.
 - **Private by default** — everything lives in `~/.local/share/goto/` and `~/.config/goto/`. No telemetry.
 
@@ -61,7 +64,7 @@ Download a binary for your platform from the [latest release](https://github.com
 
 ```sh
 goto google.com                       # https://google.com
-goto localhost:3000                   # http://localhost:3000  (with --no-https)
+goto localhost:3000 --no-https        # http://localhost:3000
 goto https://claude.ai                # passthrough
 goto search "claude code"             # opens your configured search engine
 ```
@@ -100,6 +103,16 @@ goto
 
 </div>
 
+### Language
+
+The interface follows `$LANG` automatically (any `es*` locale → Spanish, else English).
+You can force a language with either:
+
+```sh
+goto --lang es ls        # one-off
+export GOTO_LANG=es      # session-wide
+```
+
 ### Shell completion
 
 ```sh
@@ -125,6 +138,7 @@ Override paths with environment variables:
 ```sh
 export GOTO_CONFIG=$HOME/.dotfiles/goto.toml
 export GOTO_ALIASES=$HOME/.dotfiles/aliases.json
+export GOTO_LANG=es                  # or en
 ```
 
 ## Flags
@@ -134,6 +148,7 @@ export GOTO_ALIASES=$HOME/.dotfiles/aliases.json
 | `--browser <name>` | override browser for this call |
 | `--no-https` | prepend `http://` instead of `https://` when no protocol is given |
 | `--dry-run` | print the resolved URL without opening it |
+| `--lang <en\|es>` | force interface language for this invocation |
 
 ## How resolution works
 
@@ -154,6 +169,7 @@ When you run `goto foo`, `goto` tries these in order:
 - [ ] Browser profile selection (Chrome `--profile`)
 - [ ] Scoop bucket for Windows
 - [ ] Interactive disambiguation picker when multiple fuzzy candidates
+- [ ] Additional languages (French, Portuguese, German, Japanese…)
 
 ## Development
 
@@ -166,11 +182,13 @@ make lint        # golangci-lint
 make snapshot    # local goreleaser dry-run
 ```
 
+When adding a new user-facing string, add it to **both** language maps in [`internal/i18n/catalog.go`](./internal/i18n/catalog.go). A parity test will fail otherwise.
+
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-[MIT](./LICENSE) © Ángel Martín
+[Apache 2.0](./LICENSE) © Ángel Martín — see [NOTICE](./NOTICE).
 
 ---
 
