@@ -23,6 +23,12 @@ func Detect(target string) Type {
 		return TypeURL
 	}
 
+	// Windows drive letter (`C:\…`, `C:/…`) is not a URL scheme — route it
+	// through the path detector so it can be stat()'d.
+	if isWindowsDrivePath(t) {
+		return detectPath(t)
+	}
+
 	// Explicit protocol prefixes.
 	if strings.HasPrefix(t, "mailto:") {
 		return TypeMailto
@@ -57,19 +63,7 @@ func Detect(target string) Type {
 
 	// Path-like tokens: absolute, home, or explicit relative.
 	if looksLikePath(t) {
-		expanded := expandHome(t)
-		if st, err := os.Stat(expanded); err == nil {
-			if st.IsDir() {
-				return TypeDirectory
-			}
-			return TypeFile
-		}
-		// Target path doesn't exist; lean on the slash to call it a directory
-		// if it ends with /, else a file.
-		if strings.HasSuffix(t, string(os.PathSeparator)) || strings.HasSuffix(t, "/") {
-			return TypeDirectory
-		}
-		return TypeFile
+		return detectPath(t)
 	}
 
 	// user@host[:port] short-form SSH (must contain @ and not be an email with dots-only).
@@ -98,6 +92,31 @@ func Resolve(a Alias) Type {
 		return Detect(a.Target)
 	}
 	return a.Type
+}
+
+func detectPath(t string) Type {
+	expanded := expandHome(t)
+	if st, err := os.Stat(expanded); err == nil {
+		if st.IsDir() {
+			return TypeDirectory
+		}
+		return TypeFile
+	}
+	// Target path doesn't exist; trailing separator ⇒ dir, else file.
+	if strings.HasSuffix(t, string(os.PathSeparator)) || strings.HasSuffix(t, "/") || strings.HasSuffix(t, "\\") {
+		return TypeDirectory
+	}
+	return TypeFile
+}
+
+func isWindowsDrivePath(t string) bool {
+	if len(t) < 3 {
+		return false
+	}
+	if !((t[0] >= 'a' && t[0] <= 'z') || (t[0] >= 'A' && t[0] <= 'Z')) {
+		return false
+	}
+	return t[1] == ':' && (t[2] == '\\' || t[2] == '/')
 }
 
 func looksLikePath(t string) bool {
