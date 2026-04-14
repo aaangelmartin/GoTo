@@ -6,6 +6,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-04-14
+
+### Added / Añadido
+- **First-run onboarding** — launching `goto` for the first time with no config/aliases opens a bilingual TUI wizard (welcome → language → theme → browser → default action → first alias → done) that saves `config.toml` so it never runs twice.
+- **Asistente inicial** — al lanzar `goto` por primera vez sin config/aliases se abre un asistente TUI bilingüe (bienvenida → idioma → tema → navegador → acción por defecto → primer alias → fin) que guarda `config.toml` y no se vuelve a mostrar.
+
+### Changed / Cambiado
+- Shields.io badges repainted in the `for-the-badge` style with `labelColor=000000` and purpose-specific accents (`#00B5E2` project, `#D22128` Apache license, `#22D3A6` CI, `#F9C900` Homebrew, `#FF79C6` Charm, `#00ADD8` Go).
+- Badges renovados con estilo `for-the-badge` + `labelColor=000000` y acentos por propósito.
+- `CLAUDE.md` and the `.claude/` workspace directory are now git-ignored.
+
 ## [0.3.0] — 2026-04-14
 
 ### Added / Añadido
@@ -55,7 +66,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 - Fuzzy alias resolver (exact > prefix > substring > subsequence-density).
 - Homebrew tap and multi-arch GitHub Releases via goreleaser.
 
-[Unreleased]: https://github.com/aaangelmartin/GoTo/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/aaangelmartin/GoTo/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/aaangelmartin/GoTo/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/aaangelmartin/GoTo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/aaangelmartin/GoTo/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/aaangelmartin/GoTo/releases/tag/v0.1.0
