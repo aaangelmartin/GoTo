@@ -19,6 +19,7 @@ var catalog = map[Lang]map[string]string{
 		"add_short":        "Add a new alias",
 		"add_tag":          "comma-separated tags",
 		"add_desc":         "description",
+		"add_type":         "explicit type (url|mailto|ssh|file|directory|command); default auto-detects",
 		"added":            "added: %s -> %s\n",
 		"err_name_invalid": "invalid alias name %q: no whitespace or slashes",
 
@@ -115,6 +116,19 @@ var catalog = map[Lang]map[string]string{
 		"err_empty_url":        "url is required",
 		"err_invalid_name":     "name must not contain spaces or slashes",
 
+		// v0.3 — multi-type targets + shell init + language switch
+		"shellinit_short":           "Emit a shell wrapper that lets directory aliases cd the parent shell (source into .zshrc/.bashrc/config.fish)",
+		"err_shell_wrapper_missing": "goto: shell wrapper not installed — run: eval \"$(goto shell-init zsh)\"",
+		"type_url":                  "url",
+		"type_mailto":               "mail",
+		"type_ssh":                  "ssh",
+		"type_file":                 "file",
+		"type_directory":            "dir",
+		"type_command":              "cmd",
+		"type_auto":                 "auto",
+		"tui_lang_switched":         "language set to %s (permanent)",
+		"help_lang":                 "cycle interface language (persisted)",
+
 		// TUI — help rows
 		"help_move":   "move selection",
 		"help_jump":   "jump to top / bottom",
@@ -143,6 +157,7 @@ var catalog = map[Lang]map[string]string{
 		// CLI — add
 		"add_short":        "Añade un nuevo alias",
 		"add_tag":          "etiquetas separadas por comas",
+		"add_type":         "tipo explícito (url|mailto|ssh|file|directory|command); por defecto autodetecta",
 		"add_desc":         "descripción",
 		"added":            "añadido: %s -> %s\n",
 		"err_name_invalid": "nombre de alias inválido %q: sin espacios ni barras",
@@ -239,6 +254,19 @@ var catalog = map[Lang]map[string]string{
 		"err_empty_name":       "el nombre es obligatorio",
 		"err_empty_url":        "la url es obligatoria",
 		"err_invalid_name":     "el nombre no puede llevar espacios ni barras",
+
+		// v0.3 — destinos multi-tipo + shell init + cambio de idioma
+		"shellinit_short":           "Emite un wrapper de shell para que los alias de directorio cambien de directorio en el shell padre (sourcéalo en .zshrc/.bashrc/config.fish)",
+		"err_shell_wrapper_missing": "goto: wrapper de shell no instalado — ejecuta: eval \"$(goto shell-init zsh)\"",
+		"type_url":                  "url",
+		"type_mailto":               "mail",
+		"type_ssh":                  "ssh",
+		"type_file":                 "archivo",
+		"type_directory":            "dir",
+		"type_command":              "cmd",
+		"type_auto":                 "auto",
+		"tui_lang_switched":         "idioma establecido a %s (permanente)",
+		"help_lang":                 "cambiar idioma (se guarda)",
 
 		// TUI — help rows
 		"help_move":   "mover selección",

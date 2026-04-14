@@ -26,9 +26,20 @@ func newAddCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// Resolve an explicit --type if the user set one, else keep auto.
+			explicit := parseType(flags.typeFlag)
+			target := rawURL
+			effective := explicit
+			if explicit == alias.TypeAuto {
+				effective = alias.Detect(rawURL)
+			}
+			if effective == alias.TypeURL {
+				target = urlx.Normalize(rawURL, flags.noHTTPS)
+			}
 			a := alias.Alias{
 				Name:        name,
-				URL:         urlx.Normalize(rawURL, flags.noHTTPS),
+				Target:      target,
+				Type:        explicit,
 				Description: flags.descFlag,
 				CreatedAt:   time.Now(),
 			}
@@ -46,11 +57,12 @@ func newAddCmd() *cobra.Command {
 			if err := st.Save(); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("added"), a.Name, a.URL)
+			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("added"), a.Name, a.Target)
 			return nil
 		},
 	}
 	cmd.Flags().StringVar(&flags.tagFlag, "tag", "", i18n.T("add_tag"))
 	cmd.Flags().StringVar(&flags.descFlag, "desc", "", i18n.T("add_desc"))
+	cmd.Flags().StringVar(&flags.typeFlag, "type", "", i18n.T("add_type"))
 	return cmd
 }

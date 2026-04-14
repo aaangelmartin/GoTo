@@ -59,7 +59,7 @@ func (f *formModel) focusFirst() tea.Cmd {
 func (f *formModel) loadFrom(a alias.Alias) {
 	f.editing = a.Name
 	f.inputs[0].SetValue(a.Name)
-	f.inputs[1].SetValue(a.URL)
+	f.inputs[1].SetValue(a.Target)
 	f.inputs[2].SetValue(strings.Join(a.Tags, ", "))
 	f.inputs[3].SetValue(a.Description)
 }
@@ -126,9 +126,16 @@ func (f *formModel) submit(st *store.Store) error {
 		}
 	}
 
+	// For URL-looking targets we auto-prepend https://; otherwise keep as-is
+	// so mailto:, ssh://, file://, paths and commands survive unchanged.
+	target := rawURL
+	if detected := alias.Detect(rawURL); detected == alias.TypeURL {
+		target = urlx.Normalize(rawURL, false)
+	}
 	a := alias.Alias{
 		Name:        name,
-		URL:         urlx.Normalize(rawURL, false),
+		Target:      target,
+		Type:        alias.TypeAuto,
 		Tags:        tags,
 		Description: strings.TrimSpace(f.inputs[3].Value()),
 	}
