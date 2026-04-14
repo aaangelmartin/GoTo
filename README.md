@@ -1,19 +1,21 @@
 <div align="center">
 
 ```
-   ___  ___  ____  ____
-  / __)/ _ \(_  _)/ _  )
- ( (_-\(_)  ) )(  )(_) )
-  \___/\___/ (__) \____)
+  ____     _____
+ / ___| __|_   _|__
+| |  _ / _ \| |/ _ \
+| |_| | (_) | | (_) |
+ \____|\___/|_|\___/
 ```
 
-### Open any URL and manage link aliases straight from your terminal.
+### Open anything from your terminal — URLs, files, directories, mail, SSH hosts.
 
-[![CI](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml/badge.svg)](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/aaangelmartin/GoTo?sort=semver&color=%23FF79C6)](https://github.com/aaangelmartin/GoTo/releases/latest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-8BE9FD)](./LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/aaangelmartin/GoTo/ci.yml?branch=main&label=CI&color=00B5E2)](https://github.com/aaangelmartin/GoTo/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/aaangelmartin/GoTo?sort=semver&color=00B5E2)](https://github.com/aaangelmartin/GoTo/releases/latest)
+[![License](https://img.shields.io/badge/license-Apache%202.0-00B5E2)](./LICENSE)
 [![Go Report](https://goreportcard.com/badge/github.com/aaangelmartin/goto)](https://goreportcard.com/report/github.com/aaangelmartin/goto)
-[![Made with Charm](https://img.shields.io/badge/made%20with-%F0%9F%92%9C%20Charm-FF79C6)](https://charm.sh)
+[![Languages](https://img.shields.io/badge/lang-EN%20%C2%B7%20ES-00B5E2)](./README.es.md)
+[![Made with Charm](https://img.shields.io/badge/made%20with-Charm-00B5E2)](https://charm.sh)
 
 **English** · [Español](./README.es.md)
 
@@ -23,21 +25,30 @@
 
 ## Why `goto`?
 
-`open google.com` fails on macOS because `open(1)` thinks `google.com` is a file.
-You end up typing `open https://google.com` every time. Not anymore.
+`open google.com` fails on macOS because `open(1)` thinks `google.com` is a file. You end up typing `open https://google.com` every time. `goto` fixes that — and keeps going: one command, any target.
 
 ```sh
-$ goto google.com           # opens https://google.com
-$ goto gh                   # opens your saved alias 'gh'
-$ goto                      # launches the interactive TUI
+$ goto google.com                    # URL          → https://google.com
+$ goto me@example.com                # mail         → opens mail client
+$ goto user@myserver --type ssh      # ssh          → opens terminal + ssh
+$ goto ~/Downloads                   # directory    → cd (via shell wrapper)
+$ goto ~/notes.md                    # file         → default app (or per-ext)
+$ goto gh                            # saved alias  → fuzzy resolved
+$ goto                               # no args      → interactive TUI
 ```
 
-- **Zero-friction URLs** — auto-prepends `https://` when missing; respects `http://`, `mailto:`, `ssh://`, `file://`, and any other protocol.
-- **Named aliases** — `gh`, `mail`, `jira`, `localhost3000`. Keep your muscle memory, stop typing URLs.
+### What makes it different
+
+- **Zero-friction URLs** — auto-prepends `https://` when missing; respects every known scheme (`http`, `mailto`, `ssh`, `file`, `sftp`, `chrome`, …).
+- **Everything is an alias** — URLs, emails, SSH hosts, files, directories, even raw shell commands. Each alias remembers its type, so `goto dev` can `cd`, `goto pdfs` can open Preview, and `goto gh` can open your browser.
+- **Smart auto-detection** — `goto` inspects the target and picks the right opener: path exists on disk → file/dir; email-shaped → mailto; `ssh://` or `user@host` → SSH; bare domain → URL. Override with `--type` or `default_action` in config.
+- **Fully configurable per type** — each type picks its own app (`[openers]` table in `config.toml`). Per-extension overrides too (`.pdf = "Preview"`, `.md = "cursor"`).
+- **Directory aliases that actually `cd`** — source `goto shell-init zsh`/`bash`/`fish` once and `goto dev` changes your shell's working directory (just like the classic iridakos `goto`).
 - **Fuzzy matching** — `goto githu` still hits `github`.
-- **Beautiful TUI** — [Bubble Tea](https://github.com/charmbracelet/bubbletea) powered. Add, edit, delete, search, copy, filter by tag. Four built-in themes.
-- **Bilingual** — English and Spanish interface auto-detected from `LANG`, overridable with `--lang`.
-- **Cross-platform** — macOS, Linux, Windows. Single static binary, ~5 MB.
+- **Tab completion** — `goto <tab>` suggests your aliases. `goto completion zsh` installs it.
+- **Beautiful TUI** — [Bubble Tea](https://github.com/charmbracelet/bubbletea) powered. Type badges color each alias by kind. Live filter, preview pane, add/edit/delete, clipboard, tag filter, five themes, and a **permanent language toggle** (`L` key).
+- **Bilingual** — English and Spanish auto-detected from `$LANG`, overridable with `--lang` (one-off) or `L` in the TUI (persisted).
+- **Cross-platform** — macOS, Linux, Windows. Single static binary.
 - **Private by default** — everything lives in `~/.local/share/goto/` and `~/.config/goto/`. No telemetry.
 
 ## Install
@@ -69,18 +80,51 @@ goto https://claude.ai                # passthrough
 goto search "claude code"             # opens your configured search engine
 ```
 
-### Manage aliases
+### Manage aliases (any type)
 
 ```sh
+# URL (detected automatically)
 goto add gh github.com/aaangelmartin --tag dev --desc "My GitHub"
-goto add jira my-co.atlassian.net/jira --tag work
-goto ls                               # pretty table
+
+# Email → opens your mail client
+goto add ceo bossperson@example.com --type mailto
+
+# SSH → opens a new terminal window with an ssh session
+goto add prod user@prod.example.com --type ssh
+
+# Directory → `goto dev` will `cd` (needs shell-init once)
+goto add dev ~/Development
+
+# File → opens with the default app (or per-extension override)
+goto add notes ~/Documents/brain-dump.md
+
+# Raw shell command
+goto add deploy "make deploy" --type command
+
+goto ls                               # pretty table with type badges
 goto ls --tag work --json             # machine-readable
 goto edit gh --url github.com/aaangelmartin/GoTo
 goto rm jira -y                       # skip confirmation
 goto export > aliases.json            # backup
 goto import aliases.json --overwrite  # restore
 ```
+
+### Shell integration (for directory aliases)
+
+To make `goto <dir-alias>` actually `cd` in your current shell (because a child process can't `cd` its parent), source the wrapper once:
+
+```sh
+# zsh
+echo 'eval "$(goto shell-init zsh)"' >> ~/.zshrc
+
+# bash
+echo 'eval "$(goto shell-init bash)"' >> ~/.bashrc
+
+# fish
+echo 'goto shell-init fish | source' >> ~/.config/fish/config.fish
+```
+
+URLs, mail, ssh, files, and commands still work without the wrapper — it only matters for directories.
 
 ### Launch the TUI
 
@@ -127,10 +171,24 @@ Config lives at `$XDG_CONFIG_HOME/goto/config.toml` (defaults to `~/.config/goto
 
 ```toml
 browser         = "default"          # default | chrome | firefox | safari | arc | brave | edge | opera | vivaldi
-search_engine   = "https://www.google.com/search?q={q}"   # use DuckDuckGo, Kagi, etc.
+search_engine   = "https://www.google.com/search?q={q}"   # DuckDuckGo, Kagi, Perplexity, etc.
 theme           = "default"          # default | dracula | catppuccin | nord | tokyonight
+language        = "auto"             # auto | en | es   (persisted from the TUI 'L' key)
 confirm_delete  = true
 fuzzy_threshold = 0.4                # lower = more lenient fuzzy matches
+
+default_action  = "auto"             # auto | url | file | directory  (what an un-aliased arg becomes)
+directory_mode  = "shell"            # shell (cd via wrapper) | finder
+terminal        = ""                 # terminal emulator for SSH (empty = OS default)
+
+[openers]
+url       = "default"                # which browser for URLs
+mailto    = "default"                # mail client
+ssh       = ""                       # ssh command (usually empty)
+file      = "default"                # default app for files
+directory = ""                       # only used when directory_mode = "finder"
+".pdf"    = "Preview"                # per-extension overrides
+".md"     = "cursor"
 ```
 
 Override paths with environment variables:
@@ -147,21 +205,32 @@ export GOTO_LANG=es                  # or en
 | --- | --- |
 | `--browser <name>` | override browser for this call |
 | `--no-https` | prepend `http://` instead of `https://` when no protocol is given |
-| `--dry-run` | print the resolved URL without opening it |
+| `--dry-run` | print the resolved target + type without opening it |
 | `--lang <en\|es>` | force interface language for this invocation |
+| `--type <kind>` (on `add`) | explicit type: `url`, `mailto`, `ssh`, `file`, `directory`, `command`, `auto` |
 
 ## How resolution works
 
 When you run `goto foo`, `goto` tries these in order:
 
-1. **Protocol present?** (`foo://bar`, `mailto:a@b`) — open as-is.
-2. **Exact alias match?** — open, bump hit counter.
-3. **Fuzzy alias match** — if exactly one candidate (or a strong winner above `fuzzy_threshold`), open it.
-4. **Looks like a URL?** (contains a dot, no whitespace) — normalize (`https://` prefix) and open.
-5. **Nothing matched** — suggest `goto search "foo"`.
+1. **Exact alias match?** — resolve the stored type and open. Bump hit counter.
+2. **Fuzzy alias match** — if one clear winner above `fuzzy_threshold`, open it. Multiple ambiguous candidates → error listing them.
+3. **Auto-detect type of the raw argument**:
+   - starts with a known scheme (`http://`, `mailto:`, `ssh://`, `file://`, …) → that type
+   - matches an email regex → `mailto`
+   - path-looking (`/…`, `~/…`, `./…`, `C:\…`) → stat the filesystem: directory vs file
+   - `user@host` with no TLD → `ssh`
+   - contains a dot, no whitespace → `url` (prepend `https://`)
+   - contains whitespace → `command` (shell-exec)
+4. **`default_action`** in config can override the detection (`url`, `file`, `directory`, `auto`).
 
 ## Roadmap
 
+- [x] Multi-type aliases (URL, mailto, ssh, file, directory, command)
+- [x] Shell wrapper for directory aliases (`goto shell-init`)
+- [x] Tab completion for aliases
+- [x] Permanent language toggle from the TUI
+- [ ] TUI autocomplete for paths/URLs inside add/edit forms
 - [ ] Sync backend (gist / git repo) for cross-device aliases
 - [ ] Group / workspace filtering
 - [ ] History view in TUI
