@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/aaangelmartin/goto/internal/alias"
+	"github.com/aaangelmartin/goto/internal/i18n"
 	"github.com/aaangelmartin/goto/internal/store"
 )
 
@@ -16,7 +17,7 @@ func newImportCmd() *cobra.Command {
 	var overwrite bool
 	cmd := &cobra.Command{
 		Use:   "import <file.json>",
-		Short: "Import aliases from a JSON file",
+		Short: i18n.T("import_short"),
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := os.ReadFile(args[0])
@@ -25,7 +26,7 @@ func newImportCmd() *cobra.Command {
 			}
 			var list []alias.Alias
 			if err := json.Unmarshal(b, &list); err != nil {
-				return fmt.Errorf("parse %s: %w", args[0], err)
+				return fmt.Errorf(i18n.T("err_parse"), args[0], err)
 			}
 			_, st, err := loadState()
 			if err != nil {
@@ -52,10 +53,10 @@ func newImportCmd() *cobra.Command {
 			if err := st.Save(); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "imported: %d added, %d updated, %d skipped\n", added, updated, skipped)
+			fmt.Fprintf(cmd.OutOrStdout(), i18n.T("imported"), added, updated, skipped)
 			return nil
 		},
 	}
-	cmd.Flags().BoolVar(&overwrite, "overwrite", false, "overwrite existing aliases instead of skipping")
+	cmd.Flags().BoolVar(&overwrite, "overwrite", false, i18n.T("import_overwrite"))
 	return cmd
 }

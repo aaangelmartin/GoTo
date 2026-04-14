@@ -5,31 +5,21 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
 func (m *model) updateConfirm(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if k, ok := msg.(tea.KeyMsg); ok {
 		switch k.String() {
-		case "y", "Y":
-			if err := m.store.Delete(m.confirmTarget.Name); err != nil {
-				m.setStatus("delete failed: " + err.Error())
-			} else {
-				_ = m.store.Save()
-				m.setStatus("deleted " + m.confirmTarget.Name)
-				m.refresh()
-			}
+		case "y", "Y", "s", "S":
+			m.confirmDelete()
 			m.screen = screenList
 		case "n", "N", "esc":
 			m.screen = screenList
 		case "enter":
 			if m.confirmYes {
-				if err := m.store.Delete(m.confirmTarget.Name); err != nil {
-					m.setStatus("delete failed: " + err.Error())
-				} else {
-					_ = m.store.Save()
-					m.setStatus("deleted " + m.confirmTarget.Name)
-					m.refresh()
-				}
+				m.confirmDelete()
 			}
 			m.screen = screenList
 		case "left", "right", "tab":
@@ -39,14 +29,24 @@ func (m *model) updateConfirm(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m *model) confirmDelete() {
+	if err := m.store.Delete(m.confirmTarget.Name); err != nil {
+		m.setStatus(i18n.Tf("tui_status_delfail", err.Error()))
+		return
+	}
+	_ = m.store.Save()
+	m.setStatus(i18n.Tf("tui_status_deleted", m.confirmTarget.Name))
+	m.refresh()
+}
+
 func (m *model) confirmView() string {
-	title := m.theme.Danger_.Render("Delete alias?")
+	title := m.theme.Danger_.Render(i18n.T("tui_confirm_delete"))
 	body := fmt.Sprintf("%s\n%s\n\n",
 		m.theme.Title.Render(m.confirmTarget.Name),
 		m.theme.URL.Render(m.confirmTarget.URL),
 	)
-	yes := "[ Yes ]"
-	no := "[ No ]"
+	yes := i18n.T("tui_confirm_yes")
+	no := i18n.T("tui_confirm_no")
 	if m.confirmYes {
 		yes = m.theme.ItemSel.Render(yes)
 		no = m.theme.Item.Render(no)

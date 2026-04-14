@@ -5,12 +5,14 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/aaangelmartin/goto/internal/i18n"
 )
 
 func newExportCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "export [file.json]",
-		Short: "Export aliases as JSON (stdout if no file given)",
+		Short: i18n.T("export_short"),
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, st, err := loadState()
