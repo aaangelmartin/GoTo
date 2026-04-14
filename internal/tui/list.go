@@ -88,14 +88,10 @@ func (m *model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		case "o":
-			// Open config.toml in $EDITOR to let the user edit [openers]
-			// without leaving goto. Falls back to printing the path if no
-			// $EDITOR is set.
-			if path, err := openConfigInEditor(); err != nil {
-				m.setStatus(i18n.Tf("tui_status_err", err.Error()))
-			} else {
-				m.setStatus(i18n.Tf("tui_status_config_open", path))
-			}
+			// Open the in-TUI Settings screen (editing config.toml in
+			// $EDITOR doesn't work while Bubble Tea owns the altscreen).
+			m.openSettings()
+			return m, nil
 		case "t":
 			filtered := m.filteredItems()
 			if m.tagFilter != "" {

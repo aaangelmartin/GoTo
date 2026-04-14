@@ -64,7 +64,8 @@ var catalog = map[Lang]map[string]string{
 		"config_path_short": "Print the config file path",
 
 		// CLI — completion
-		"completion_short": "Generate shell completion scripts",
+		"completion_short":         "Generate shell completion scripts",
+		"completion_install_short": "Install completion for the current (or --shell'd) shell into a user-writable path",
 
 		// CLI — version
 		"version_short": "Print version, commit and build date",
@@ -135,7 +136,15 @@ var catalog = map[Lang]map[string]string{
 		"type_auto":                 "auto",
 		"tui_lang_switched":         "language set to %s (permanent)",
 		"help_lang":                 "cycle interface language (persisted)",
-		"help_open_config":          "open config.toml in $EDITOR (per-type + per-extension openers)",
+		"help_open_config":          "open in-TUI Settings (language, theme, browser, openers…)",
+
+		// Settings screen
+		"settings_title":               "Settings",
+		"settings_desc":                "↑/↓ pick row · ←/→ or enter cycle · enter edits text rows · d deletes an extension · esc saves & exits",
+		"settings_hint":                " esc save & back · enter edit/cycle · d delete ext · q save & back",
+		"settings_editing_hint":        " enter save value · esc cancel",
+		"settings_add_ext":             "Add extension opener",
+		"settings_add_ext_placeholder": ".pdf Preview",
 
 		// First-run onboarding
 		"onb_welcome_title":    "Welcome to goto ✦",
@@ -231,7 +240,8 @@ var catalog = map[Lang]map[string]string{
 		"config_path_short": "Imprime la ruta del fichero de config",
 
 		// CLI — completion
-		"completion_short": "Genera scripts de autocompletado para tu shell",
+		"completion_short":         "Genera scripts de autocompletado para tu shell",
+		"completion_install_short": "Instala el completado para tu shell (o la indicada con --shell) en una ruta sin sudo",
 
 		// CLI — version
 		"version_short": "Muestra versión, commit y fecha de compilación",
@@ -302,7 +312,15 @@ var catalog = map[Lang]map[string]string{
 		"type_auto":                 "auto",
 		"tui_lang_switched":         "idioma establecido a %s (permanente)",
 		"help_lang":                 "cambiar idioma (se guarda)",
-		"help_open_config":          "abrir config.toml en $EDITOR (openers por tipo y por extensión)",
+		"help_open_config":          "abrir Ajustes en la TUI (idioma, tema, navegador, openers…)",
+
+		// Pantalla de Ajustes
+		"settings_title":               "Ajustes",
+		"settings_desc":                "↑/↓ fila · ←/→ o enter cambia · enter edita campos de texto · d borra una extensión · esc guarda y sale",
+		"settings_hint":                " esc guardar y volver · enter editar/cambiar · d borrar ext · q guardar y volver",
+		"settings_editing_hint":        " enter guardar valor · esc cancelar",
+		"settings_add_ext":             "Añadir opener por extensión",
+		"settings_add_ext_placeholder": ".pdf Preview",
 
 		// Onboarding inicial
 		"onb_welcome_title":    "Bienvenido a goto ✦",
